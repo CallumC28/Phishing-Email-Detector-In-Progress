@@ -37,6 +37,9 @@ A desktop application that detects phishing emails using a fine-tuned BERT model
 git clone https://github.com/CallumC28/Phishing-Email-Detector.git
 cd phishing-email-detector
 ```
+
+---
+
 ## 🧪 Training the Model
 Launch the app:
 
@@ -51,6 +54,8 @@ Click Train Model to start training
 
 Training logs and accuracy report will appear in real time
 
+---
+
 ## 🔍 Scanning Emails
 Use one of the input options in the GUI:
 
@@ -62,14 +67,22 @@ Scan Screen: Capture screen using OCR
 
 Click Scan Email to run detection. The result will indicate whether the email is likely phishing or legitimate, with a confidence score.
 
+---
+
+## 📸 Screenshots
+
+### GUI Demo
+
+![Phishing Email Detector GUI](screenshots/gui.png)
+
+---
+
 ## ✅ TODO
  Source and clean a reliable phishing email dataset
 
  Train and evaluate BERT model on real data
 
  Add support for email header parsing
-
- Deploy inference via Google Cloud Platform
 
  Export scan results as PDF
 
