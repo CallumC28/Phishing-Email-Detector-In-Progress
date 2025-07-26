@@ -34,7 +34,7 @@ A desktop application that detects phishing emails using a fine-tuned BERT model
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/phishing-email-detector.git
+git clone https://github.com/CallumC28/Phishing-Email-Detector.git
 cd phishing-email-detector
 ```
 ## 🧪 Training the Model
