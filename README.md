@@ -73,7 +73,7 @@ Click Scan Email to run detection. The result will indicate whether the email is
 
 ### GUI Demo
 
-![Phishing Email Detector GUI](screenshots/gui.png)
+![Phishing Email Detector GUI](screenshot/gui.png)
 
 ---
 
