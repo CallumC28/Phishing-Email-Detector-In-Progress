@@ -29,7 +29,7 @@ A desktop application that detects phishing emails using a fine-tuned BERT model
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the repository
 
