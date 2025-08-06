@@ -261,9 +261,9 @@ class PhishingApp:
             return
         ps, ls = is_phishing(email)
         if ps>=ls:
-            result=f"⚠️  Likely phishing (score: {ps:.2f})"
+            result=f"Likely phishing (score: {ps:.2f})"
         else:
-            result=f"✅  Legitimate (score: {ls:.2f})"
+            result=f"Legitimate (score: {ls:.2f})"
         self.result_label.config(text=result)
         messagebox.showinfo("Scan Result",result)
 
