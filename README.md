@@ -14,7 +14,7 @@ A desktop application that detects phishing emails using a fine-tuned BERT model
 - Live GUI logs and classification reports after training
 - Standalone desktop interface built with Tkinter
 - Automatic GPU detection and acceleration when available **(Only Nvidia GPUs)**
-**- Screenshot works but is not accurate at determining phishing or legitimate so avoid for now**
+- **Screenshot works but is not accurate at determining phishing or legitimate so avoid for now**
 
 ---
 
@@ -102,3 +102,4 @@ Click Scan Email to run detection. The result will indicate whether the email is
  Export scan results as PDF
 
  Add URL/link spoof detection
+
