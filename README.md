@@ -2,7 +2,7 @@
 
 A desktop application that detects phishing emails using a fine-tuned BERT model. Features a Tkinter GUI that accepts input via file upload, clipboard paste, or screen OCR. Built with PyTorch and HuggingFace Transformers, this project combines cybersecurity and NLP in a user-friendly tool. You will have to train the model youself since github limits the amount of files that can be uploaded.
 
-**Can now be trained with eaither CPU only or GPU acceleration for those with Nvidia GPUs, GPU is reccomended since CPU training times are extrememly long even for small datasets such as the current one which is 1864 entries which would of took around 10 hours but with GPU it took 5 minutes**
+**Can now be trained with eaither CPU only or GPU acceleration for those with Nvidia GPUs, GPU is reccomended since CPU training times are extrememly long even for small datasets such as the current one which would of took around 10 hours but with GPU acceleration it took 5 minutes**
 
 ---
 
@@ -80,7 +80,7 @@ Use one of the input options in the GUI:
 
 - Scan Screen: Capture screen using OCR
 
-Click Scan Email to run detection. The result will indicate whether the email is likely phishing or legitimate, with a confidence score.
+Click Scan Email to run detection. The result will indicate whether the email is likely phishing or legitimate, with a confidence score (0 to 1.00 with 1.00 being 100% confident).
 
 ---
 
@@ -102,4 +102,3 @@ Click Scan Email to run detection. The result will indicate whether the email is
  Export scan results as PDF
 
  Add URL/link spoof detection
-
