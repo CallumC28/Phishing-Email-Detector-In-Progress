@@ -3,9 +3,15 @@ import threading
 import time
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import classification_report, accuracy_score, precision_recall_fscore_support
 import torch
-from transformers import BertTokenizerFast, BertForSequenceClassification, Trainer, TrainingArguments
+from transformers import (
+    BertTokenizerFast,
+    BertForSequenceClassification,
+    Trainer,
+    TrainingArguments,
+    DataCollatorWithPadding
+)
 import tkinter as tk
 from tkinter import filedialog, scrolledtext, messagebox, ttk
 from PIL import ImageGrab
@@ -13,7 +19,6 @@ import pytesseract
 from rich.console import Console
 
 # Suppress TensorFlow logs and disable oneDNN optimisations for cleaner output
-import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Error only
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 # Disable TensorFlow integrations in Transformers
@@ -26,36 +31,32 @@ MODEL_DIR = 'saved_model'
 
 # Data loading
 def load_data(path: str):
-    """
-    Load CSV and normalise to 'text' and 'label' columns.
-    Supports:
-      - 'text' + 'label'
-      - 'Email Text' + 'Email Type' (maps 'Phishing Email'->1, 'Safe Email'->0)
-      - 'text_combined' + 'label'
-    """
     df = pd.read_csv(path)
-    # Rename text column
+    # normalise text column
     if 'text' not in df.columns:
         if 'Email Text' in df.columns:
             df = df.rename(columns={'Email Text': 'text'})
         elif 'text_combined' in df.columns:
             df = df.rename(columns={'text_combined': 'text'})
         else:
-            raise KeyError("Could not find a text column in CSV. Expected 'text', 'Email Text', or 'text_combined'.")
-    # Create/rename label column
+            raise KeyError("Could not find a text column in CSV.")
+    # normalise label column
     if 'label' not in df.columns:
         if 'Email Type' in df.columns:
             df['label'] = df['Email Type'].map({'Phishing Email': 1, 'Safe Email': 0})
         elif 'Label' in df.columns:
             df = df.rename(columns={'Label': 'label'})
         else:
-            raise KeyError("Could not find a label column in CSV. Expected 'label', 'Email Type', or 'Label'.")
-    # Drop rows with missing values
+            raise KeyError("Could not find a label column in CSV.")
+    # remove empty or null texts
     df = df.dropna(subset=['text', 'label'])
+    df = df[df['text'].str.strip().astype(bool)]
     return df['text'].tolist(), df['label'].tolist()
 
-# Tokenization and dataset
+# Tokenizer and dynamic padding collator
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
+data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+
 class PhishingDataset(torch.utils.data.Dataset):
     def __init__(self, encodings, labels):
         self.encodings = encodings
@@ -71,10 +72,26 @@ class PhishingDataset(torch.utils.data.Dataset):
 def compute_metrics(eval_pred):
     logits, labels = eval_pred
     preds = logits.argmax(axis=1)
-    return {'accuracy': (preds == labels).mean()}
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        labels, preds, average='binary', pos_label=1
+    )
+    return {
+        'accuracy': (preds == labels).mean(),
+        'precision': precision,
+        'recall': recall,
+        'f1': f1
+    }
 
 # Training function
 def train_model(csv_path: str, log_widget=None):
+    
+    # Debug for trying to see if its using the GPU
+    print("CUDA available:", torch.cuda.is_available())
+    if torch.cuda.is_available():
+        print("CUDA device count:", torch.cuda.device_count())
+        print("Current CUDA device:", torch.cuda.current_device())
+        print("Device name:", torch.cuda.get_device_name(0))
+        
     def log(msg, style='green'):
         if log_widget:
             log_widget.insert(tk.END, msg + "\n")
@@ -85,15 +102,16 @@ def train_model(csv_path: str, log_widget=None):
     log(f"Loading data from {csv_path}...")
     texts, labels = load_data(csv_path)
     train_texts, val_texts, train_labels, val_labels = train_test_split(
-        texts, labels, test_size=0.2, random_state=42
+        texts, labels, test_size=0.2, random_state=42, stratify=labels
     )
 
-    train_enc = tokenizer(train_texts, truncation=True, padding=True, max_length=512)
-    val_enc = tokenizer(val_texts, truncation=True, padding=True, max_length=512)
+    # tokenize and pad dynamically
+    train_enc = tokenizer(train_texts, truncation=True, padding=False)
+    val_enc = tokenizer(val_texts, truncation=True, padding=False)
     train_ds = PhishingDataset(train_enc, train_labels)
     val_ds = PhishingDataset(val_enc, val_labels)
 
-    log("Initializing model...")
+    log("Initialising model...")
     if os.path.isdir(MODEL_DIR) and os.listdir(MODEL_DIR):
         model = BertForSequenceClassification.from_pretrained(MODEL_DIR, num_labels=2)
     else:
@@ -101,20 +119,23 @@ def train_model(csv_path: str, log_widget=None):
 
     args = TrainingArguments(
         output_dir='./results',
-        num_train_epochs=3,
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=16,
+        num_train_epochs=2,                # fewer epochs for speed
+        per_device_train_batch_size=16,    # larger batch on GPU
+        per_device_eval_batch_size=32,
         logging_dir='./logs',
         learning_rate=2e-5,
-        fp16=True,                           # Mixed precision for speed
-        gradient_accumulation_steps=2,       # Accumulate gradients to simulate larger batch
-        dataloader_num_workers=4,            # Parallel data loading
+        fp16=True,                         # mixed precision on GPU
+        gradient_accumulation_steps=1,
+        dataloader_num_workers=4,
+        do_eval=True
     )
     trainer = Trainer(
         model=model,
         args=args,
         train_dataset=train_ds,
         eval_dataset=val_ds,
+        data_collator=data_collator,
+        tokenizer=tokenizer,
         compute_metrics=compute_metrics
     )
 
