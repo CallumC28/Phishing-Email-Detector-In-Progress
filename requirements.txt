@@ -1,0 +1,25 @@
+# Phishing Email Detector - Requirements
+
+# Loading and processing CSV training datasets
+pip install pandas
+
+# Train/test data splitting, accuracy metrics, classification reports
+pip install scikit-learn
+
+# BERT model inference, GPU acceleration, tensor operations
+pip install torch # Use this one for CPU only if you dont have a Nvidia GPU
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+
+# BERT tokenizer, model loading, training pipeline components
+pip install transformers
+
+# Screen capture functionality for OCR scanning
+pip install pillow
+
+# Text extraction from screen captures for email analysis
+pip install pytesseract
+
+# Colored console logging during model training
+pip install rich
