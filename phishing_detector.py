@@ -68,7 +68,7 @@ class PhishingDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.labels)
 
-# Metrics
+# Metrics 
 def compute_metrics(eval_pred):
     logits, labels = eval_pred
     preds = logits.argmax(axis=1)
@@ -105,13 +105,13 @@ def train_model(csv_path: str, log_widget=None):
         texts, labels, test_size=0.2, random_state=42, stratify=labels
     )
 
-    # tokenize and pad dynamically
+    # tokenize and pad dynamically 
     train_enc = tokenizer(train_texts, truncation=True, padding=False)
     val_enc = tokenizer(val_texts, truncation=True, padding=False)
     train_ds = PhishingDataset(train_enc, train_labels)
     val_ds = PhishingDataset(val_enc, val_labels)
 
-    log("Initialising model...")
+    log("Starting model...")
     if os.path.isdir(MODEL_DIR) and os.listdir(MODEL_DIR):
         model = BertForSequenceClassification.from_pretrained(MODEL_DIR, num_labels=2)
     else:
