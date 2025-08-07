@@ -93,7 +93,7 @@ Click Scan Email to run detection. The result will indicate whether the email is
 ---
 
 ## TODO
- Source and clean a reliable phishing email dataset
+ Source and clean a more extensive phishing email dataset
 
  Train and evaluate BERT model on real data
 
@@ -102,3 +102,4 @@ Click Scan Email to run detection. The result will indicate whether the email is
  Export scan results as PDF
 
  Add URL/link spoof detection
+
