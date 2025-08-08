@@ -63,11 +63,11 @@ python phishing_detector.py
 ```
 In the GUI:
 
-Click Browse CSV to select your dataset
+1. Click Browse CSV to select your dataset
 
-Click Train Model to start training
+2. Click Train Model to start training
 
-Training logs and accuracy report will appear in real time
+Training logs and accuracy report will appear in real time in teh terminal on the GUI
 
 ---
 
@@ -102,5 +102,6 @@ Click Scan Email to run detection. The result will indicate whether the email is
  Export scan results as PDF
 
  Add URL/link spoof detection
+
 
 
