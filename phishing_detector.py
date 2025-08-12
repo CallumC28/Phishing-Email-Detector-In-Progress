@@ -17,8 +17,6 @@ from tkinter import filedialog, scrolledtext, messagebox, ttk
 from PIL import ImageGrab
 import pytesseract
 from rich.console import Console
-import pytesseract
-import pytesseract
 
 # Point pytesseract at the full path of the tesseract.exe
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" # Point it to tesseract.exe in your file path so screen scan can work
