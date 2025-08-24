@@ -95,13 +95,12 @@ Click Scan Email to run detection. The result will indicate whether the email is
 ## TODO
  Source and clean a more extensive phishing email dataset
 
- Train and evaluate BERT model on real data
-
  Add support for email header parsing
 
  Export scan results as PDF
 
  Add URL/link spoof detection
+
 
 
 
